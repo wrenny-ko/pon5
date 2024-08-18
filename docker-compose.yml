@@ -1,0 +1,27 @@
+services:
+  web:
+    image: php:apache
+    ports:
+      - "80:80"
+    depends_on:
+      - db
+    build: .
+    volumes:
+      - ./html:/var/www/html
+  db:
+    image: mysql:8.1.0
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: pon5_db
+    volumes:
+      - ./mysql_db:/var/lib/mysql
+      - ./schema:/docker-entrypoint-initdb.d
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    ports:
+      - "8080:80"
+    depends_on:
+      - db
+    environment:
+      PMA_HOST:
+        db
