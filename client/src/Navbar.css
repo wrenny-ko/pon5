@@ -1,0 +1,41 @@
+.navbar {
+  display: flex;
+  height: 50px;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #505050;
+  color: #33d17a;
+}
+
+.icon {
+  width: 40px;
+  height: 40px;
+  padding: 5px 5px 5px 5px;
+}
+
+.avatar {
+  border-radius: 12px;
+}
+
+.nav-entry {
+  transition: all 0.4s;
+}
+
+.nav-entry:hover {
+  background-color: rgba(255, 255, 255, 0.25);
+}
+
+.upload {
+  margin-left: 2rem;
+}
+
+.account {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  font-size: 1.2rem;
+  margin-right: 5px;
+  font-weight: bold;
+  color: #33d17a;
+  text-decoration: none;
+}

@@ -1,0 +1,12 @@
+.videoCardCart {
+  display: flex;
+  flex-direction: row;
+  overflow-y: auto;
+  flex-wrap: wrap;
+  height: 100%;
+  width: 100%;
+  align-items: left;
+  justify-content: center;
+  column-gap: 5px;
+  margin: 5px;
+}

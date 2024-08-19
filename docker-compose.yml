@@ -16,6 +16,13 @@ services:
     volumes:
       - ./mysql_db:/var/lib/mysql
       - ./schema:/docker-entrypoint-initdb.d
+  node:
+    image: node:bookworm
+    build: ./client
+    ports:
+      - "3000:3000"
+    profiles:
+      ["react"]
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
     ports:
