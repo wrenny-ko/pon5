@@ -7,10 +7,9 @@ const VideoCardCart = (props) => {
 
   useEffect(() => {
     const fetchVideoIDs = async () => {
-      const response = await fetch('http://localhost:80/simplequery.php', {
+      const response = await fetch('http://localhost:80/videos.php', {
         headers:{
           accept: 'application/json',
-          'User-agent': 'pon5 frontend',
         },
       });
       
