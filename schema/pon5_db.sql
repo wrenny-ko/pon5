@@ -35,6 +35,8 @@ CREATE TABLE `videos` (
   `dislikes`    int UNSIGNED NOT NULL DEFAULT '0',
   `timestamp`   timestamp    NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `mime_type`   varchar(16)  NOT NULL,
+  `access`      varchar(16)  NOT NULL DEFAULT "",
+  `salt`        varchar(16)  NOT NULL DEFAULT "",
   `title`       varchar(30)  NOT NULL,
   `description` varchar(300) NOT NULL,
   PRIMARY KEY (id),

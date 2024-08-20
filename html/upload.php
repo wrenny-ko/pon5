@@ -4,6 +4,10 @@ header("Content-Type: multipart/form-data; charset=UTF-8");
 header("Access-Control-Allow-Headers: Content-Type");
 header("Access-Control-Allow-Methods: POST");
 
+//TODO remove
+error_reporting(E_ALL);
+ini_set('display_errors', 'On');
+
 function errorDie($msg) {
   //mysqli_close($conn); //TODO
   http_response_code(400);
@@ -14,13 +18,14 @@ function errorDie($msg) {
 // convert numbers using K/k,M/m,G/g notation to actual number
 function return_bytes($val) {
     $val = trim($val);
-    $last = strtolower($val[strlen($val)-1]);
+    $last = strtolower($val[strlen($val)-2]);
+    $bytes = $val[0, strlen($val) - 1);
     switch($last) {
-        case 'g':
+        case "gb":
             $val *= 1024;
-        case 'm':
+        case "mb":
             $val *= 1024;
-        case 'k':
+        case "kb":
             $val *= 1024;
     }
     return $val;
@@ -123,7 +128,22 @@ if ($result === false) {
 }
 
 $id = $conn->insert_id;
-$destination = '/var/www/html/videos/' . $id . '.' . $extensions[$mime_type];
+
+$iterations = 600000;
+$salt = random_bytes(8);
+$hash = hash_pbkdf2("sha256", $id, $salt, $iterations, 8);
+
+$hash_hex = bin2hex($hash);
+$salt_hex = bin2hex($salt);
+
+$sql = "UPDATE videos SET access = '$hash_hex', salt = '$salt_hex' WHERE id = $id";
+
+$result = $conn->query($sql);
+if ($result === false) {
+  errorDie("error setting access hash");
+}
+
+$destination = '/var/www/html/videos/' . $hash_hex . '.' . $extensions[$mime_type];
 if (!move_uploaded_file ($file['tmp_name'], $destination)) {
   errorDie("failed to move file");
 }
@@ -131,5 +151,5 @@ if (!move_uploaded_file ($file['tmp_name'], $destination)) {
 mysqli_close($conn);
 
 http_response_code(201);
-echo json_encode(array('success' => $id));
+echo json_encode(array('video' => $hash_hex));
 ?>

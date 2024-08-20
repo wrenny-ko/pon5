@@ -12,6 +12,9 @@ RUN apt-get install -y \
 RUN sed -i 's/upload_max_filesize.*/upload_max_filesize = 16M/' /etc/php/8.3/apache2/php.ini
 RUN sed -i 's/post_max_size.*/post_max_size = 16M/' /etc/php/8.3/apache2/php.ini
 
+RUN sed -i 's@log_errors.*@log_errors = On@' /etc/php/8.3/apache2/php.ini
+RUN sed -i 's@error_log.*@error_log = /dev/stderr@' /etc/php/8.3/apache2/php.ini
+
 RUN a2enmod headers
 RUN a2enmod php8.3
 

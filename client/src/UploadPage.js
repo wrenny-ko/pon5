@@ -3,6 +3,7 @@ import './UploadPage.css';
 
 function UploadPage() {
   const [submitted, setSubmitted] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
 
   async function submit(event){
     event.preventDefault();
@@ -24,44 +25,21 @@ function UploadPage() {
       body: formData,
     });
 
+    const res = await response.json();
     if(response.status !== 201) {
-      //trigger error modal
+      setErrorMsg("Error: " + res.error);
       setSubmitted(false);
     } else {
-      const res = await response.json();
-      window.location.href = '/videos/' + res.success;
+      window.location.href = '/videos/' + res.video;
     }
     return false;
   }
-/*
-    useEffect(() => {
-      const postVideo = async () => {
-        const response = await fetch('http://localhost:80/simpleposthandler.php', {
-          method: 'POST',
-          headers:{
-            accept: 'application/json',
-            'User-agent': 'pon5 frontend',
-          },
-          body: formData,
-        });
-        
-        if (response.ok()) {
-          //go to new video's page
-        } else {
-          //go to error page
-        }
-      };
-      
-      postVideo().catch(console.error);
-    })
-*/
-
 
   return (
     <div className="uploadPage">
       <form className="uploadForm" onSubmit={submit}>
         <div className="inputField">
-          <div className="fieldLabel">Choose mp4</div>
+          <div className="fieldLabel">Choose video (mp4 or webm)</div>
           <input className="inputFile" type="file" name="file"/>
         </div>
         <div className="inputField">
@@ -76,8 +54,13 @@ function UploadPage() {
       </form>
       {submitted?
         <div className="spinner"/>
+      :
+        (errorMsg !== "") ?
+          <div className="errorMessage">
+            {errorMsg}
+          </div>
         :
-        <></>
+          <></>
       }
     </div>
   );

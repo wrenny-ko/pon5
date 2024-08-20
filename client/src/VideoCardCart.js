@@ -22,10 +22,6 @@ const VideoCardCart = (props) => {
     fetchVideoIDs().catch(console.error);
   }, [])
 
-
-  
-//      <VideoCard id="1234" uploader="me" likes="3" views="13" title="Epic screm"/>
-//      <VideoCard id="1235" uploader="you" likes="8" views="1" title="c:"/>
   return (
     <div className="videoCardCart">
       {videoIDs.map(id => (
@@ -34,16 +30,5 @@ const VideoCardCart = (props) => {
     </div>
   );
 };
-
-/*
-async function fetchVideoIDs() {
-  
-  const response = await fetch('localhost/video_ids');
-  const data = await response.json();
-  console.log(data);
-  
-  return ["1234", "1235", "1", "2", "3", "4", "5"];
-}
-*/
 
 export default VideoCardCart;

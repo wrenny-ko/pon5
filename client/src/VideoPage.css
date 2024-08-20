@@ -1,9 +1,13 @@
 .videoPage {
-  flex: 1;
+  display: flex;
   background-color: #3d3846;
   flex-direction: column;
+  overflow-y: auto;
+  
 }
 
 .videoPage .videoPlayer {
   padding: 10px;
+  height: 40%;
+  width: 50%;
 }

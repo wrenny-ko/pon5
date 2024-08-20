@@ -4,7 +4,7 @@ import Navbar from './Navbar';
 import VideoCardCart from './VideoCardCart';
 import VideoPage from './VideoPage';
 import UploadPage from './UploadPage';
-import SubmittedPage from './SubmittedPage';
+
 //TODO /my-videos or /user/:id
 function App() {
   return (
@@ -16,7 +16,6 @@ function App() {
             <Route exact path="/" element={<VideoCardCart/>}></Route>
             <Route path="/videos/:id" element={<VideoPage/>}></Route>
             <Route path="/upload" element={<UploadPage/>}></Route>
-            <Route path="/submitted" element={<SubmittedPage/>}></Route>
             
           </Routes>
         </div>

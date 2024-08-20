@@ -5,41 +5,38 @@ import './VideoPage.css';
 function VideoPage() {
   const { id } = useParams();
   const [info, setInfo] = useState([]);
+  const [src, setSrc] = useState([]);
 
-/*
-  const [extension, setExtension] = useState([]);
-  const [title, setTitle] = useState([]);
-  const [description, setDescription] = useState([]);
-*/
-  //TODO fetch video info, update mime type, title, description
   useEffect(() => {
     const fetchVideoInfo = async () => {
-      const response = await fetch('http://localhost:80/videos/' + id + '/info', {
+      const response = await fetch('http://localhost:80/video_info.php?id=' + id, {
         headers:{
           accept: 'application/json',
         },
       });
 
-      const data = await response.json();
+      let data = await response.json();
+
+      if (response.status !== 200) {
+        console.log("failed to fetch video info")
+        console.log(data)
+      }
+
+      const extension = data.mime_type.slice(6);
+      setSrc("http://localhost:80/videos/" + id + "." + extension)
+      console.log(src)
       setInfo(data);
-      /*
-      setExtension(data.mime_type.slice(6)); // take part after "video/"
-      setTitle(data.title);
-      setDescription(data.description);
-      */
     };
 
     fetchVideoInfo().catch(console.error);
-  }, [id])
+  }, [id, src])
   return (
     <div className="videoPage">
       <div className="videoPlayer">
-        <video id={`video-${id}`} height="100%" controls>
-          <source src={`/videos/${id}.${info.mime_type.slice(6)}`}/>
-        </video>
+        <video id={`video-${id}`} height="100%" controls src={src}/>
       </div>
       <div className="titleBar">
-        {info.title}
+        {info.title} {src}
       </div>
       <div className="descriptionBox">
         {info.description}

@@ -1,6 +1,9 @@
 <?php
 header("Content-Type: application/json; charset=UTF-8");
-//header("Access-Control-Allow-Origin: http://localhost:3000");
+
+//TODO remove
+error_reporting(E_ALL);
+ini_set('display_errors', 'On');
 
 function errorDie($msg) {
   //mysqli_close($conn); //TODO
@@ -8,20 +11,20 @@ function errorDie($msg) {
   die( json_encode(array('error' => $msg)) );
 }
 
-$parsed = parse_url($_REQUEST['link']);
-$query = $parsed['query'];
-if (empty($query)) {
-  errorDie("no query in uri");
+if (empty($_GET["id"])) {
+  errorDie("no id in uri");
+}
+$id = htmlspecialchars($_GET["id"]);
+if ($id === "") {
+  errorDie("no parseable id in uri query field");
 }
 
-$id = $query['id']
-if (empty($id)) {
-  errorDie("no id in uri query field");
-}
-
+//TODO check for hex instead of below
+/*
 if (!is_numeric($id)) {
   errorDie("expected numeric id");
 }
+*/
 
 //TODO make a user
 $servername = "db";
@@ -35,36 +38,26 @@ if ($conn->connect_error) {
   die("Connection failed: " . $conn->connect_error);
 }
 
-$sql = "SELECT * FROM videos WHERE id EQUALS " . $id;
+$sql = "SELECT * FROM videos WHERE access = " . $id;
 $result = $conn->query($sql);
 if ($result->num_rows === 0) {
   errorDie("no video found with that id");
 }
 
-$row = $result->fetch_assoc();
+$info = $result->fetch_assoc();
 
-$sql = "SELECT * FROM users WHERE id EQUALS " . $row['uploader_id'];
+$sql = "SELECT * FROM users WHERE id = " . $info['uploader_id'];
 $result = $conn->query($sql);
 
-$uploader = array();
-if ($result->num_rows === 0) {
-  
-  //errorDie("uploader id is invalid");
+$uploader = "Anonymous";
+if ($result->num_rows !== 0) {
+  $uploader = $result->fetch_assoc()['name'];
 }
-//TODO just assign anonymous user in this case
 
-$response = array(
-  'id': $row['id'],
-  'likes': $row['likes'],
-  'timestamp': $row['timestamp'],
-  'uploader': $row['uploader_id'], //TODO fetch name?
-  'dislikes': $row['dislikes'],
-  'views': $row[]
-);
+unset($info['uploader_id']);
+$info['uploader'] = $uploader;
 
-
-
-echo json_encode($response);
+echo json_encode($info);
 
 mysqli_close($conn);
 ?>
