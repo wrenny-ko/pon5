@@ -29,15 +29,18 @@ CREATE TABLE `users` (
 
 CREATE TABLE `videos` (
   `id`          int UNSIGNED NOT NULL AUTO_INCREMENT,
+  `uploader_id` int UNSIGNED NOT NULL DEFAULT '0',
   `views`       int UNSIGNED NOT NULL DEFAULT '0',
   `likes`       int UNSIGNED NOT NULL DEFAULT '0',
   `dislikes`    int UNSIGNED NOT NULL DEFAULT '0',
   `timestamp`   timestamp    NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `uploader_id` int UNSIGNED NOT NULL DEFAULT '0',
+  `mime_type`   varchar(16)  NOT NULL,
   `title`       varchar(30)  NOT NULL,
   `description` varchar(300) NOT NULL,
   PRIMARY KEY (id),
   FOREIGN KEY (uploader_id) REFERENCES users(id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+INSERT INTO `users` (`email`, `name`, `salt`, `hash`) VALUES ('me@me', 'anonymous', 'deadbeef', 'deadbeef');
 
 COMMIT;
