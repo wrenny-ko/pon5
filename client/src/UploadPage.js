@@ -7,6 +7,8 @@ function UploadPage() {
 
   async function submit(event){
     event.preventDefault();
+
+    // disable the submit button and show the spinner
     setSubmitted(true);
 
     const formData = new FormData();
@@ -27,12 +29,16 @@ function UploadPage() {
 
     const res = await response.json();
     if(response.status !== 201) {
+      // show error message
       setErrorMsg("Error: " + res.error);
+
+      // hide the spinner and allow the submit button to be pressed again
       setSubmitted(false);
     } else {
+      // on success, route to the new video's page
       window.location.href = '/videos/' + res.video;
     }
-    return false;
+    return false; // this is so the normal form handler doesn't resume after
   }
 
   return (

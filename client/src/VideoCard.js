@@ -7,8 +7,6 @@ const VideoCard = (props) => {
 
   useEffect(() => {
     const fetchVideoInfo = async () => {
-      console.log(props)
-      console.log(props.id)
       const response = await fetch('http://localhost:80/video_info.php?id=' + props.id, {
         headers:{
           accept: 'application/json',
@@ -17,14 +15,13 @@ const VideoCard = (props) => {
 
       let data = await response.json();
 
+      //TODO replace this block
       if (response.status !== 200) {
-        console.log("failed to fetch video info")
-        console.log(data)
+        return;
       }
 
       const extension = data.mime_type.slice(6);
       setSrc("http://localhost:80/videos/" + props.id + "." + extension)
-      console.log(src)
       setInfo(data);
     };
 
@@ -32,23 +29,22 @@ const VideoCard = (props) => {
   }, [props, src])
 
   return (
-    //Title, uploader, uploader avatar, likes
-      <a href={`/videos/${props.id}`} className={`video-card video-${props.id}`}>
-        <div className="thumbnail-container">
-          <img src={`http://localhost:80/thumbnails/${props.id}.jpeg`} className="thumbnail" alt="thumbnail"/>
+    <a href={`/videos/${props.id}`} className={`video-card video-${props.id}`}>
+      <div className="thumbnail-container">
+        <img src={`http://localhost:80/thumbnails/${props.id}.jpeg`} className="videoCardThumbnail" alt="thumbnail"/>
+      </div>
+      <div className="videoCardInfo">
+        <div className="videoCardTitle">
+          {info.title}
         </div>
-        <div className="info">
-          <div className="title">
-            {info.title}
-          </div>
-          <div className="uploader">
-            {info.uploader}
-          </div>
-          <div className="numbers">
-            {info.likes} likes, {info.views} views
-          </div>
+        <div className="videoCardUploader">
+          {info.uploader}
         </div>
-      </a>
+        <div className="videoCardNumbers">
+          {info.likes} likes, {info.views} views
+        </div>
+      </div>
+    </a>
   );
 };
 

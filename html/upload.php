@@ -4,18 +4,21 @@ header("Content-Type: multipart/form-data; charset=UTF-8");
 header("Access-Control-Allow-Headers: Content-Type");
 header("Access-Control-Allow-Methods: POST");
 
-//TODO remove
+//TODO for debugging; remove for production
+/*
 error_reporting(E_ALL);
 ini_set('display_errors', 'On');
+*/
 
 function errorDie($msg) {
-  //mysqli_close($conn); //TODO
+  //mysqli_close($conn); //TODO handle this with a global? how to best clean up?
   http_response_code(400);
   die( json_encode(array('error' => $msg)) );
 }
 
 // https://www.phphelp.com/t/check-for-upload-file-size-too-large-is-not-working/34793/2
-// convert numbers using K/k,M/m,G/g notation to actual number
+// convert byte size representations using K/k,M/m,G/g notation to actual number of bytes
+// Example: '12KB' to '12288'
 function return_bytes($val) {
     $val = trim($val);
     $last = strtolower($val[strlen($val)-2]);
@@ -31,7 +34,9 @@ function return_bytes($val) {
     return $val;
 }
 
-//TODO MB or Mb?
+// TODO MB or Mb?
+// forms the bite size notation from a raw bytes number.
+// Example: '12288' to '12KB'
 function format_bytes($val) {
     $units = array("B", "KB", "MB", "GB");
     $index = 0;
@@ -42,14 +47,17 @@ function format_bytes($val) {
     return $val . $units[$index];
 }
 
+// Checks
+/////////////////////////////////////////////////////////////////////
 $requestMethod = $_SERVER["REQUEST_METHOD"]; 
 if ($requestMethod !== 'POST') {
   errorDie("expected a POST request");
 }
 
-if (empty($_POST) or empty($_POST)) {
+// check for behavior when a form was too large to accept
+if (empty($_POST)) {
   $length = $_SERVER['CONTENT_LENGTH'];
-  
+
   $umf = return_bytes(ini_get('upload_max_filesize'));
   $pms = return_bytes(ini_get('post_max_size'));
   $less = ($umf > $pms) ? $pms : $umf;
@@ -67,7 +75,6 @@ if(!json_validate($json)) {
   errorDie("invalid json for file info");
 }
 
-//TODO also check user id
 $info = json_decode($json);
 if (!isset($info->title) or !isset($info->description)) {
   errorDie("improperly formatted file info");
@@ -84,6 +91,8 @@ if ($info->title === "") {
 if ($info->description === "") {
   $info->description = "apparently a description was deemed unecessary for this video";
 }
+
+//TODO add functionality for testing and parsing user ids
 
 if (!array_key_exists('file', $_FILES)) {
   errorDie("no file in request");
@@ -104,11 +113,14 @@ $extensions = array(
 );
 
 $mime_type = mime_content_type($file['tmp_name']);
-if (! in_array($mime_type, array_keys($extensions))) {
+if ( !in_array($mime_type, array_keys($extensions)) ) {
     errorDie("only accepts mp4 or webm");
 }
 
-//TODO make a user
+
+// Database Insert for video
+/////////////////////////////////////////////////////////////////////
+//TODO make a user?
 $servername = "db";
 $username = "root";
 $password = "root";
@@ -135,6 +147,9 @@ if ($result === false) {
   errorDie("upload failed");
 }
 
+
+// Generate video access hash, Update the database row
+/////////////////////////////////////////////////////////////////////
 $id = $conn->insert_id;
 
 $iterations = 600000;
@@ -150,13 +165,17 @@ if ($result === false) {
   errorDie("error setting access hash");
 }
 
+mysqli_close($conn);
+
+// Copy the tmp video file to the public-served folder
+/////////////////////////////////////////////////////////////////////
 $destination = '/var/www/html/videos/' . $hash_hex . '.' . $extensions[$mime_type];
 if (!move_uploaded_file ($file['tmp_name'], $destination)) {
   errorDie("failed to move file");
 }
 
-mysqli_close($conn);
-
+// Generate thumbnail image, save to public thumbnails folder
+/////////////////////////////////////////////////////////////////////
 $thumbnail_path = "/var/www/html/thumbnails/" . $hash_hex . '.jpeg';
 $cmd = "/usr/bin/ffmpeg -i $destination -ss 1 -t 00:00:01  -s '300x300' -r 1 -y -vcodec mjpeg -f mjpeg $thumbnail_path 2>&1";
 exec($cmd, $output, $retval);

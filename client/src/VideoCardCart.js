@@ -4,6 +4,7 @@ import VideoCard from './VideoCard.js'
 
 const VideoCardCart = (props) => {
   const [videoIDs, setVideoIDs] = useState([]);
+  const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
     const fetchVideoIDs = async () => {
@@ -15,6 +16,7 @@ const VideoCardCart = (props) => {
 
       const data = await response.json();
       setVideoIDs(data);
+      setLoaded(true);
     };
 
     fetchVideoIDs().catch(console.error);
@@ -22,7 +24,7 @@ const VideoCardCart = (props) => {
 
   return (
     <div className="videoCardCart">
-      {videoIDs.length > 0 ? 
+      {videoIDs.length > 0 || !loaded ? 
         videoIDs.map(id => (
           <VideoCard id={id} key={id}/>
         ))

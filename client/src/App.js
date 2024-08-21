@@ -6,7 +6,6 @@ import VideoPage from './VideoPage';
 import UploadPage from './UploadPage';
 import NotFoundPage from './NotFoundPage';
 
-//TODO /my-videos or /user/:id
 function App() {
   return (
     <div className="App">

@@ -17,13 +17,13 @@ function VideoPage() {
 
       let data = await response.json();
 
+      //TODO handle code 400 separately
       if (response.status !== 200) {
         window.location.href = '/404';
       }
 
       const extension = data.mime_type.slice(6);
       setSrc("http://localhost:80/videos/" + id + "." + extension)
-      console.log(src)
       setInfo(data);
     };
 

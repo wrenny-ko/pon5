@@ -10,7 +10,7 @@
   border-color: rgba(255,255,255,0.4);
 }
 
-.thumbnail {
+.videoCardThumbnail {
   height: 100%;
   width: 100%;
   object-fit: cover;
@@ -27,29 +27,28 @@
   border: 3px solid #FC0;
 }
 
-.info {
+.videoCardInfo {
   display: flex;
   align-items: center;
   flex-direction: column;
   color: #33d17a;
   text-decoration: none;
   height: 100%;
+  word-wrap: wrap;
 }
 
-.title {
-  flex: 1;
-  font-size: 1rem;
+.videoCardTitle {
+  font-size: 1.3rem;
+  font-weight: bold;
 }
 
-.uploader {
-  flex: 1;
+.videoCardUploader {
   font-size: 0.7rem;
 }
 
-.numbers {
-  flex: 1;
+.videoCardNumbers {
   font-size: 0.7rem;
-  margin-top: auto;
+  margin-top: 10px;
 }
 
 
