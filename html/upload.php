@@ -19,7 +19,7 @@ function errorDie($msg) {
 function return_bytes($val) {
     $val = trim($val);
     $last = strtolower($val[strlen($val)-2]);
-    $bytes = $val[0, strlen($val) - 1);
+    $bytes = mb_substr($val, 0, strlen($val)-1);
     switch($last) {
         case "gb":
             $val *= 1024;
@@ -85,9 +85,13 @@ if ($info->description === "") {
   $info->description = "apparently a description was deemed unecessary for this video";
 }
 
+if (!array_key_exists('file', $_FILES)) {
+  errorDie("no file in request");
+}
+
 $file = $_FILES['file'];
 if (empty($file)) {
-  errorDie("no file in request");
+  errorDie("empty file in request");
 }
 
 if (!is_uploaded_file($file['tmp_name'])) {
@@ -120,7 +124,11 @@ if ($conn->connect_error) {
 //TODO add parsing of user id
 $userid = 1; //anonymous user is 1
 
-$sql = "INSERT INTO videos (uploader_id, mime_type, title, description) VALUES ($userid, '$mime_type', '$info->title', '$info->description')";
+$escaped_mime = htmlspecialchars($mime_type);
+$escaped_title = htmlspecialchars($info->title);
+$escaped_description = htmlspecialchars($info->description);
+
+$sql = "INSERT INTO videos (uploader_id, mime_type, title, description) VALUES ($userid, '$escaped_mime', '$escaped_title', '$escaped_description')";
 
 $result = $conn->query($sql);
 if ($result === false) {
@@ -134,9 +142,8 @@ $salt = random_bytes(8);
 $hash = hash_pbkdf2("sha256", $id, $salt, $iterations, 8);
 
 $hash_hex = bin2hex($hash);
-$salt_hex = bin2hex($salt);
 
-$sql = "UPDATE videos SET access = '$hash_hex', salt = '$salt_hex' WHERE id = $id";
+$sql = "UPDATE videos SET access = '$hash_hex' WHERE id = $id";
 
 $result = $conn->query($sql);
 if ($result === false) {
@@ -149,6 +156,14 @@ if (!move_uploaded_file ($file['tmp_name'], $destination)) {
 }
 
 mysqli_close($conn);
+
+$thumbnail_path = "/var/www/html/thumbnails/" . $hash_hex . '.jpeg';
+$cmd = "/usr/bin/ffmpeg -i $destination -ss 1 -t 00:00:01  -s '300x300' -r 1 -y -vcodec mjpeg -f mjpeg $thumbnail_path 2>&1";
+exec($cmd, $output, $retval);
+
+if ($retval) {
+    errorDie('error in generating video thumbnail');
+}
 
 http_response_code(201);
 echo json_encode(array('video' => $hash_hex));

@@ -2,16 +2,19 @@ FROM ubuntu:24.04
 
 COPY html/ /var/www/html/
 
-RUN chown www-data /var/www/html/videos
+RUN chown www-data:www-data /var/www/html/videos
+RUN chown www-data:www-data /var/www/html/thumbnails
+RUN chown www-data:www-data /var/www/html/avatars
 
 ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get upgrade -y
 RUN apt-get install -y \
-    apache2 php8.3 php8.3-mysql libapache2-mod-php8.3 php-mysql
+    apache2 php8.3 php8.3-mysql libapache2-mod-php8.3 php-mysql ffmpeg
 
 RUN sed -i 's/upload_max_filesize.*/upload_max_filesize = 16M/' /etc/php/8.3/apache2/php.ini
 RUN sed -i 's/post_max_size.*/post_max_size = 16M/' /etc/php/8.3/apache2/php.ini
 
+#comment out for production
 RUN sed -i 's@log_errors.*@log_errors = On@' /etc/php/8.3/apache2/php.ini
 RUN sed -i 's@error_log.*@error_log = /dev/stderr@' /etc/php/8.3/apache2/php.ini
 

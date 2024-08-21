@@ -18,8 +18,7 @@ function VideoPage() {
       let data = await response.json();
 
       if (response.status !== 200) {
-        console.log("failed to fetch video info")
-        console.log(data)
+        window.location.href = '/404';
       }
 
       const extension = data.mime_type.slice(6);
@@ -30,13 +29,37 @@ function VideoPage() {
 
     fetchVideoInfo().catch(console.error);
   }, [id, src])
+
+  //TODO add link to uploader's page or to a results page of that user's videos
+
   return (
     <div className="videoPage">
       <div className="videoPlayer">
         <video id={`video-${id}`} height="100%" controls src={src}/>
+        <div className="metadata">
+          <div className="views">
+            {info.views} o.0
+          </div>
+          <div className="ratio">
+            <div className="likes">
+              {info.likes}^
+            </div>
+            <div className="dislikes">
+              {info.dislikes}v
+            </div>
+          </div>
+        </div>
       </div>
       <div className="titleBar">
-        {info.title} {src}
+        <div className="title">
+          {info.title}
+        </div>
+        <div className="uploader">
+          by {info.uploader}
+        </div>
+        <div className="timestamp">
+        at {info.timestamp}
+        </div>
       </div>
       <div className="descriptionBox">
         {info.description}

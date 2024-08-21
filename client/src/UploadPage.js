@@ -13,7 +13,7 @@ function UploadPage() {
 
     const info = JSON.stringify({
       title: event.target.title.value,
-      description: event.target.title.value,
+      description: event.target.description.value,
     })
     formData.append("info", info)
 

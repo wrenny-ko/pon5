@@ -12,21 +12,25 @@ const VideoCardCart = (props) => {
           accept: 'application/json',
         },
       });
-      
+
       const data = await response.json();
       setVideoIDs(data);
     };
-
-    
 
     fetchVideoIDs().catch(console.error);
   }, [])
 
   return (
     <div className="videoCardCart">
-      {videoIDs.map(id => (
-        <VideoCard id={id} key={id}/>
-      ))}
+      {videoIDs.length > 0 ? 
+        videoIDs.map(id => (
+          <VideoCard id={id} key={id}/>
+        ))
+      :
+        <div className="empty">
+          No videos....yet!
+        </div>
+      }
     </div>
   );
 };

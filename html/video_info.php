@@ -5,9 +5,9 @@ header("Content-Type: application/json; charset=UTF-8");
 error_reporting(E_ALL);
 ini_set('display_errors', 'On');
 
-function errorDie($msg) {
+function errorDie($msg, $code=400) {
   //mysqli_close($conn); //TODO
-  http_response_code(400);
+  http_response_code($code);
   die( json_encode(array('error' => $msg)) );
 }
 
@@ -19,12 +19,10 @@ if ($id === "") {
   errorDie("no parseable id in uri query field");
 }
 
-//TODO check for hex instead of below
-/*
+//TODO check for hex instead?
 if (!is_numeric($id)) {
-  errorDie("expected numeric id");
+  errorDie("expected numeric id", 404);
 }
-*/
 
 //TODO make a user
 $servername = "db";
@@ -35,13 +33,13 @@ $dbname = "pon5_db";
 $conn = new mysqli($servername, $username, $password, $dbname);
 
 if ($conn->connect_error) {
-  die("Connection failed: " . $conn->connect_error);
+  errorDie("database connection failed");
 }
 
 $sql = "SELECT * FROM videos WHERE access = " . $id;
 $result = $conn->query($sql);
 if ($result->num_rows === 0) {
-  errorDie("no video found with that id");
+  errorDie("no video found with that id", 404);
 }
 
 $info = $result->fetch_assoc();
@@ -56,6 +54,9 @@ if ($result->num_rows !== 0) {
 
 unset($info['uploader_id']);
 $info['uploader'] = $uploader;
+
+$info['title'] = htmlspecialchars_decode($info['title']);
+$info['description'] = htmlspecialchars_decode($info['description']);
 
 echo json_encode($info);
 

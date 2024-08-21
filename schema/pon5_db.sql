@@ -36,9 +36,8 @@ CREATE TABLE `videos` (
   `timestamp`   timestamp    NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `mime_type`   varchar(16)  NOT NULL,
   `access`      varchar(16)  NOT NULL DEFAULT "",
-  `salt`        varchar(16)  NOT NULL DEFAULT "",
-  `title`       varchar(30)  NOT NULL,
-  `description` varchar(300) NOT NULL,
+  `title`       varchar(120) NOT NULL,
+  `description` varchar(750) NOT NULL,
   PRIMARY KEY (id),
   FOREIGN KEY (uploader_id) REFERENCES users(id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
