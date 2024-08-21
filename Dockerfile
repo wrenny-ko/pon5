@@ -2,11 +2,6 @@ FROM ubuntu:24.04
 
 COPY html/ /var/www/html/
 
-# enable saving of files by the server
-RUN chown www-data:www-data /var/www/html/videos
-RUN chown www-data:www-data /var/www/html/thumbnails
-RUN chown www-data:www-data /var/www/html/avatars
-
 ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get upgrade -y
 RUN apt-get install -y \
@@ -31,6 +26,16 @@ RUN echo "  Header add Access-Control-Allow-Methods 'GET, POST'" >> /etc/apache2
 RUN echo "</IfModule>" >> /etc/apache2/apache2.conf
 
 RUN service apache2 restart
+
+# ensure public data folders exist
+RUN mkdir /var/www/html/videos
+RUN mkdir /var/www/html/thumbnails
+RUN mkdir /var/www/html/avatars
+
+# enable saving of files by the server
+RUN chown www-data:www-data /var/www/html/videos
+RUN chown www-data:www-data /var/www/html/thumbnails
+RUN chown www-data:www-data /var/www/html/avatars
 
 # stock command to run continuously so the docker container doesn't exit.
 CMD ["apachectl", "-D", "FOREGROUND"]
