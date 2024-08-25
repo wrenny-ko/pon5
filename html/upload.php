@@ -114,7 +114,7 @@ $extensions = array(
 
 $mime_type = mime_content_type($file['tmp_name']);
 if ( !in_array($mime_type, array_keys($extensions)) ) {
-    errorDie("only accepts mp4 or webm");
+  errorDie("only accepts mp4 or webm");
 }
 
 

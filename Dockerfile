@@ -28,9 +28,9 @@ RUN echo "</IfModule>" >> /etc/apache2/apache2.conf
 RUN service apache2 restart
 
 # ensure public data folders exist
-RUN mkdir /var/www/html/videos
-RUN mkdir /var/www/html/thumbnails
-RUN mkdir /var/www/html/avatars
+#RUN mkdir /var/www/html/videos
+#RUN mkdir /var/www/html/thumbnails
+#RUN mkdir /var/www/html/avatars
 
 # enable saving of files by the server
 RUN chown www-data:www-data /var/www/html/videos
